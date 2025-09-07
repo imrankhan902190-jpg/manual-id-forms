@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Online ID Document Manual Forms</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0; padding: 0;
+            background: #f4f4f4;
+        }
+        header {
+            background: #0366d6;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav button {
+            margin: 0 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            background: #039be5;
+            color: white;
+            border-radius: 4px;
+        }
+        nav button:hover {
+            background: #0277bd;
+        }
+        main {
+            max-width: 700px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #aaa;
+        }
+        form {
+            display: none;
+            margin-top: 20px;
+        }
+        form.active {
+            display: block;
+        }
+        form label {
+            display: block;
+            margin-top: 10px;
+        }
+        form input, form select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        form button {
+            margin-top: 15px;
+            background: #0366d6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        form button:hover {
+            background: #024a9e;
+        }
+        #loginForm, #registerForm {
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #aaa;
+            display: none;
+        }
+        #loginForm.active, #registerForm.active {
+            display: block;
+        }
+        #userArea {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #helpSection {
+            background: #e3f2fd;
+            padding: 15px;
+            margin-top: 25px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            main, #loginForm, #registerForm {
+                width: 90%;
+                margin: 10px auto;
+            }
+            nav button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+        .error {
+            color: red;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Online Manual Forms Service</h1>
+    <div id="userArea">
+        <span id="welcomeMsg"></span>
+        <button onclick="logout()" id="logoutBtn" style="display:none;">Logout</button>
+    </div>
+</header>
+
+<nav id="navButtons" style="text-align:center; margin-top:10px;">
+    <button onclick="showForm('panForm')">PAN Card Form</button>
+    <button onclick="showForm('aadhaarForm')">Aadhaar Card Form</button>
+    <button onclick="showForm('voterForm')">Voter Card Form</button>
+</nav>
+
+<main>
+
+    <div id="loginForm">
+        <h2>Login</h2>
+        <form onsubmit="return loginUser(event)">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" required />
+            <label for="loginPass">Password:</label>
+            <input type="password" id="loginPass" required minlength="6" />
+            <div class="error" id="loginError"></div>
+            <button type="submit">Login</button>
+            <p>Don't have an account? <a href="#" onclick="toggleForms('register')">Register here</a></p>
+        </form>
+    </div>
+
+    <div id="registerForm">
+        <h2>Register</h2>
+        <form onsubmit="return registerUser(event)">
+            <label for="registerEmail">Email:</label>
+            <input type="email" id="registerEmail" required />
+            <label for="registerPass">Password:</label>
+            <input type="password" id="registerPass" required minlength="6" />
+            <div class="error" id="registerError"></div>
+            <button type="submit">Register</button>
+            <p>Already have an account? <a href="#" onclick="toggleForms('login')">Login here</a></p>
+        </form>
+    </div>
+
+    <form id="panForm">
+        <h2>PAN Card Manual Form</h2>
+        <label for="panName">Name:</label>
+        <input type="text" id="panName" name="name" required />
+        <label for="panDOB">Date of Birth:</label>
+        <input type="date" id="panDOB" name="dob" required />
+        <label for="panFatherName">Father's Name:</label>
+        <input type="text" id="panFatherName" name="fathername" required />
+        <label for="panAddress">Address:</label>
+        <input type="text" id="panAddress" name="address" required />
+        <label for="panMobile">Mobile Number:</label>
+        <input type="tel" id="panMobile" name="mobile" pattern="[0-9]{10}" required />
+        <div class="error" id="panError"></div>
+        <button type="submit">Generate PDF</button>
+    </form>
+
+    <form id="aadhaarForm">
+        <h2>Aadhaar Card Manual Form</h2>
+        <label for="aadhaarName">Name:</label>
+        <input type="text" id="aadhaarName" name="name" required />
+        <label for="aadhaarDOB">Date of Birth:</label>
+        <input type="date" id="aadhaarDOB" name="dob" required />
+        <label for="aadhaarGender">Gender:</label>
+        <select id="aadhaarGender" name="gender" required>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+        <label for="aadhaarAddress">Address:</label>
+        <input type="text" id="aadhaarAddress" name="address" required />
+        <label for="aadhaarMobile">Mobile Number:</label>
+        <input type="tel" id="aadhaarMobile" name="mobile" pattern="[0-9]{10}" required />
+        <div class="error" id="aadhaarError"></div>
+        <button type="submit">Generate PDF</button>
+    </form>
+
+    <form id="voterForm">
+        <h2>Voter Card Manual Form</h2>
+        <label for="voterName">Name:</label>
+        <input type="text" id="voterName" name="name" required />
+        <label for="voterDOB">Date of Birth:</label>
+        <input type="date" id="voterDOB" name="dob" required />
+        <label for="voterGuardianName">Father's/Husband's Name:</label>
+        <input type="text" id="voterGuardianName" name="guardianname" required />
+        <label for="voterAddress">Address:</label>
+        <input type="text" id="voterAddress" name="address" required />
+        <label for="voterMobile">Mobile Number:</label>
+        <input type="tel" id="voterMobile" name="mobile" pattern="[0-9]{10}" required />
+        <div class="error" id="voterError"></div>
+        <button type="submit">Generate PDF</button>
+    </form>
+
+    <section id="helpSection">
+        <h3>Help / Instructions</h3>
+        <p>Is website par aap manually apni details bhar kar PAN, Aadhaar, aur Voter Card ke liye forms generate kar sakte hain. Har form ke fields sahi tareeke se bharein aur PDF generate karein. PDF ko aap download ya print kar sakte hain.</p>
+        <p>Official documents ke liye aapko sarkari portal par jaakar final submission karna hoga.</p>
+    </section>
+
+</main>
+
+<script>
+    // Show/hide forms
+    function showForm(formId) {
+        if(!isLoggedIn()) {
+            alert('Please login first.');
+            showLogin();
+            return;
+        }
+        ['panForm', 'aadhaarForm', 'voterForm'].forEach(id => {
+            document.getElementById(id).classList.remove('active');
+        });
+        document.getElementById(formId).classList.add('active');
+    }
+
+    // Login/Register form toggle
+    function toggleForms(form) {
+        if(form === 'login') {
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('registerForm').classList.remove('active');
+            document.getElementById('panForm').classList.remove('active');
+            document.getElementById('aadhaarForm').classList.remove('active');
+            document.getElementById('voterForm').classList.remove('active');
+        } else {
+            document.getElementById('registerForm').classList.add('active');
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('panForm').classList.remove('active');
+            document.getElementById('aadhaarForm').classList.remove('active');
+            document.getElementById('voterForm').classList.remove('active');
+        }
+    }
+
+    // Local storage user handling
+    function getUsers() {
+        return JSON.parse(localStorage.getItem('users') || '[]');
+    }
+    function setUsers(users) {
+        localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function isLoggedIn() {
+        return localStorage.getItem('loggedInUser') != null;
+    }
+    function getCurrentUser() {
+        return localStorage.getItem('loggedInUser');
+    }
+
+    function showLogin() {
+        toggleForms('login');
+        updateUserArea();
+    }
+    function showRegister() {
+        toggleForms('register');
+        updateUserArea();
+    }
+
+    function updateUserArea() {
+        const userArea = document.getElementById('userArea');
+        const welcomeMsg = document.getElementById('welcomeMsg');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if(isLoggedIn()) {
+            welcomeMsg.textContent = 'Welcome, ' + getCurrentUser();
+            logoutBtn.style.display = 'inline-block';
+            document.getElementById('navButtons').style.display = 'block';
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('registerForm').classList.remove('active');
+        } else {
+            welcomeMsg.textContent = '';
+            logoutBtn.style.display = 'none';
+            document.getElementById('navButtons').style.display = 'none';
+            document.getElementById('panForm').classList.remove('active');
+            document.getElementById('aadhaarForm').classList.remove('active');
+            document.getElementById('voterForm').classList.remove('active');
+            showLogin();
+        }
+    }
+
+    // Register user
+    function registerUser(event) {
+        event.preventDefault();
+        const email = document.getElementById('registerEmail').value.toLowerCase();
+        const pass = document.getElementById('registerPass').value;
+        const registerError = document.getElementById('registerError');
+        registerError.textContent = '';
+
+        if(pass.length < 6) {
+            registerError.textContent = 'Password must be at least 6 characters.';
+            return false;
+        }
+        const users = getUsers();
+        if(users.find(u => u.email === email)) {
+            registerError.textContent = 'Email already registered.';
+            return false;
+        }
+        users.push({email, pass});
+        setUsers(users);
+        alert('Registration successful! Please login.');
+        toggleForms('login');
+        return false;
+    }
+
+    // Login user
+    function loginUser(event) {
+        event.preventDefault();
+        const email = document.getElementById('loginEmail').value.toLowerCase();
+        const pass = document.getElementById('loginPass').value;
+        const loginError = document.getElementById('loginError');
+        loginError.textContent = '';
+
+        const users = getUsers();
+        const user = users.find(u => u.email === email && u.pass === pass);
+        if(user) {
+            localStorage.setItem('loggedInUser', email);
+            updateUserArea();
+            alert('Login successful!');
+        } else {
+            loginError.textContent = 'Invalid email or password.';
+        }
+        return false;
+    }
+
+    function logout() {
+        localStorage.removeItem('loggedInUser');
+        updateUserArea();
+        alert('Logged out successfully.');
+    }
+
+    // Validation and PDF generation for each form
+    async function generatePDF(event, type) {
+        event.preventDefault();
+
+        let form, errorDiv;
+        if(type === 'PAN') {
+            form = document.getElementById('panForm');
+            errorDiv = document.getElementById('panError');
+        } else if(type === 'Aadhaar') {
+            form = document.getElementById('aadhaarForm');
+            errorDiv = document.getElementById('aadhaarError');
+        } else if(type === 'Voter Card') {
+            form = document.getElementById('voterForm');
+            errorDiv = document.getElementById('voterError');
+        }
+
+        errorDiv.textContent = '';
+
+        if(!form.checkValidity()) {
+            errorDiv.textContent = 'Please fill all required fields correctly.';
+            form.reportValidity();
+            return false;
+        }
+
+        // Form-specific extra validation
+        if(type === 'PAN' || type === 'Aadhaar' || type === 'Voter Card') {
+            const mobile = form.querySelector('input[name="mobile"]').value;
+            const mobilePattern = /^[0-9]{10}$/;
+            if(!mobilePattern.test(mobile)) {
+                errorDiv.textContent = 'Please enter a valid 10-digit mobile number.';
+                return false;
+            }
+        }
+
+        // Generate PDF with jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text(`${type} Card Manual Form`, 10, 20);
+
+        const formData = new FormData(form);
+        let y = 30;
+        for(let [key, value] of formData.entries()) {
+            doc.setFontSize(12);
+            doc.text(`${capitalizeFirstLetter(key)}: ${value}`, 10, y);
+            y += 10;
+        }
+
+        doc.save(`${type}_Manual_Form.pdf`);
+        form.reset();
+        return false;
+    }
+
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    // On page load
+    window.onload = function() {
+        updateUserArea();
+    }
+
+    // Attach form submit for PDF generation
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("panForm").onsubmit = function(e) { generatePDF(e, "PAN"); };
+        document.getElementById("aadhaarForm").onsubmit = function(e) { generatePDF(e, "Aadhaar"); };
+        document.getElementById("voterForm").onsubmit = function(e) { generatePDF(e, "Voter Card"); };
+    });
+</script>
+
+</body>
+</html>
