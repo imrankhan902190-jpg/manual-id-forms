@@ -6,103 +6,23 @@
     <title>Online ID Document Manual Forms</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0; padding: 0;
-            background: #f4f4f4;
-        }
-        header {
-            background: #0366d6;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-        nav button {
-            margin: 0 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            border: none;
-            background: #039be5;
-            color: white;
-            border-radius: 4px;
-        }
-        nav button:hover {
-            background: #0277bd;
-        }
-        main {
-            max-width: 700px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px #aaa;
-        }
-        form {
-            display: none;
-            margin-top: 20px;
-        }
-        form.active {
-            display: block;
-        }
-        form label {
-            display: block;
-            margin-top: 10px;
-        }
-        form input, form select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            box-sizing: border-box;
-        }
-        form button {
-            margin-top: 15px;
-            background: #0366d6;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        form button:hover {
-            background: #024a9e;
-        }
-        #loginForm, #registerForm {
-            max-width: 400px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px #aaa;
-            display: none;
-        }
-        #loginForm.active, #registerForm.active {
-            display: block;
-        }
-        #userArea {
-            text-align: center;
-            margin: 20px 0;
-        }
-        #helpSection {
-            background: #e3f2fd;
-            padding: 15px;
-            margin-top: 25px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-        }
-        @media (max-width: 600px) {
-            main, #loginForm, #registerForm {
-                width: 90%;
-                margin: 10px auto;
-            }
-            nav button {
-                width: 100%;
-                margin: 5px 0;
-            }
-        }
-        .error {
-            color: red;
-            font-size: 0.85rem;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+        header { background: #0366d6; color: white; padding: 1rem; text-align: center; }
+        nav button { margin: 0 5px; padding: 10px 15px; cursor: pointer; border: none; background: #039be5; color: white; border-radius: 4px; }
+        nav button:hover { background: #0277bd; }
+        main { max-width: 700px; margin: 20px auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px #aaa; }
+        form { display: none; margin-top: 20px; }
+        form.active { display: block; }
+        form label { display: block; margin-top: 10px; }
+        form input, form select { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; }
+        form button { margin-top: 15px; background: #0366d6; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px; }
+        form button:hover { background: #024a9e; }
+        #loginForm, #registerForm { max-width: 400px; margin: 20px auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px #aaa; display: none; }
+        #loginForm.active, #registerForm.active { display: block; }
+        #userArea { text-align: center; margin: 20px 0; }
+        #helpSection { background: #e3f2fd; padding: 15px; margin-top: 25px; border-radius: 5px; font-size: 0.9rem; }
+        @media (max-width: 600px) { main, #loginForm, #registerForm { width: 90%; margin: 10px auto; } nav button { width: 100%; margin: 5px 0; } }
+        .error { color: red; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -122,7 +42,6 @@
 </nav>
 
 <main>
-
     <div id="loginForm">
         <h2>Login</h2>
         <form onsubmit="return loginUser(event)">
@@ -135,7 +54,6 @@
             <p>Don't have an account? <a href="#" onclick="toggleForms('register')">Register here</a></p>
         </form>
     </div>
-
     <div id="registerForm">
         <h2>Register</h2>
         <form onsubmit="return registerUser(event)">
@@ -148,7 +66,6 @@
             <p>Already have an account? <a href="#" onclick="toggleForms('login')">Login here</a></p>
         </form>
     </div>
-
     <form id="panForm">
         <h2>PAN Card Manual Form</h2>
         <label for="panName">Name:</label>
@@ -164,7 +81,6 @@
         <div class="error" id="panError"></div>
         <button type="submit">Generate PDF</button>
     </form>
-
     <form id="aadhaarForm">
         <h2>Aadhaar Card Manual Form</h2>
         <label for="aadhaarName">Name:</label>
@@ -185,7 +101,6 @@
         <div class="error" id="aadhaarError"></div>
         <button type="submit">Generate PDF</button>
     </form>
-
     <form id="voterForm">
         <h2>Voter Card Manual Form</h2>
         <label for="voterName">Name:</label>
@@ -201,13 +116,11 @@
         <div class="error" id="voterError"></div>
         <button type="submit">Generate PDF</button>
     </form>
-
     <section id="helpSection">
         <h3>Help / Instructions</h3>
         <p>Is website par aap manually apni details bhar kar PAN, Aadhaar, aur Voter Card ke liye forms generate kar sakte hain. Har form ke fields sahi tareeke se bharein aur PDF generate karein. PDF ko aap download ya print kar sakte hain.</p>
         <p>Official documents ke liye aapko sarkari portal par jaakar final submission karna hoga.</p>
     </section>
-
 </main>
 
 <script>
@@ -258,11 +171,11 @@
 
     function showLogin() {
         toggleForms('login');
-        updateUserArea();
+        // updateUserArea(); // FIX: Remove recursive call
     }
     function showRegister() {
         toggleForms('register');
-        updateUserArea();
+        // updateUserArea(); // FIX: Remove recursive call
     }
 
     function updateUserArea() {
@@ -361,7 +274,6 @@
             return false;
         }
 
-        // Form-specific extra validation
         if(type === 'PAN' || type === 'Aadhaar' || type === 'Voter Card') {
             const mobile = form.querySelector('input[name="mobile"]').value;
             const mobilePattern = /^[0-9]{10}$/;
@@ -371,7 +283,6 @@
             }
         }
 
-        // Generate PDF with jsPDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
